@@ -1,12 +1,11 @@
 $(function() {
-    console.log('Loaded');
-    console.log('accessToken:', accessToken);
 
     var container = $('#container'),
         masonry = new Masonry(container.get(0), {columnWidth: 100}),
         loaded = false;
 
-    function startSearch() {
+    function startSearch(accessToken) {
+        $('#spinner').show();
         $.ajax({
             type: 'GET',
             url: 'https://api-ssl.bitly.com/beta/search',
@@ -81,5 +80,23 @@ $(function() {
         return _templateCache[template](context);
     }
 
-    startSearch();
+
+    $('#prompt').submit(function(e) {
+        e.preventDefault();
+        var token = $('#access-token').val();
+        if (token) {
+            localStorage['accessToken'] = token;
+            $(this).hide();
+            startSearch(localStorage['accessToken']);
+        }
+    });
+
+    function init() {
+        if (!localStorage['accessToken']) {
+            $('#prompt').show();
+        } else {
+            startSearch(localStorage['accessToken']);
+        }
+    }
+    init();
 });

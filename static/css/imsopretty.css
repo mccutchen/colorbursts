@@ -78,6 +78,7 @@ a:hover {
 
 
 #spinner {
+    display: none;
     margin: 20px auto;
     text-align: center;
     color: #999;
@@ -91,4 +92,35 @@ a:hover {
 @-webkit-keyframes pulse {
     from {opacity:1}
     to {opacity:.5}
+}
+
+
+#prompt {
+    display: none;
+    width: 320px;
+    margin: 20px auto;
+    text-align: center;
+}
+#prompt label {
+    font-size: 16px;
+}
+.help {
+    color: #999;
+}
+input {
+    font-size: 16px;
+    font-family: Menlo, Consolas, monospace;
+    padding: 5px;
+    width: 320px;
+    margin-top: 10px;
+}
+input[type="text"] {
+    color: #666;
+    border: 1px solid #ccc;
+    background-color: #eee;
+}
+input[type="submit"] {
+    background-color: #333;
+    color: #fff;
+    width: 332px;
 }

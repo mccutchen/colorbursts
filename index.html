@@ -7,6 +7,18 @@
     <body>
         <h1>Bitly + Flickr = ?</h1>
 
+        <form id="prompt">
+            <label>
+                Enter your Bitly access token<br>
+                <input type="text" id="access-token">
+                <input type="submit" value="Yeehaw!">
+            </label>
+            <p class="help">You can get your access token
+            <a href="http://bitly.com/a/oauth_apps">on your Bitly OAuth apps page</a>.
+            It will only ever be stored in your browser's
+            <code>localStorage</code>, I promise!</p>
+        </form>
+
         <div id="spinner">Loading...</div>
 
         <div id="container"></div>
@@ -26,5 +38,6 @@
                 <p>by <a href="{{ author_url }}">{{ author_name }}</a></p>
             </div>
         </script>
+
     </body>
 </html>
