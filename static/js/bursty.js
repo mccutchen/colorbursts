@@ -9,7 +9,9 @@ $(function() {
 
     function startSearch() {
         loading = true;
-        $('#spinner').show();
+        if (!loaded) {
+            $('#spinner').show();
+        }
         $.ajax({
             type: 'GET',
             url: 'https://api-ssl.bitly.com/beta/search',
