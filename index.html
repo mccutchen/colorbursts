@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Bitly + Flickr = ?</title>
+        <link rel="stylesheet" type="text/css" href="static/css/imsopretty.css">
+    </head>
+    <body>
+        <h1>Bitly + Flickr = ?</h1>
+
+        <div id="container"></div>
+
+        <div id="footer">A silly hack using <a href="http://dev.bitly.com/">Bitly APIs</a> by <a href="https://twitter.com/mccutchen">Will McCutchen</div>
+
+        <script type="text/javascript" src="static/ext/zepto.js"></script>
+        <script type="text/javascript" src="static/ext/masonry.min.js"></script>
+        <script type="text/javascript" src="static/ext/handlebars-1.0.rc.1.js"></script>
+        <script type="text/javascript" src="static/js/sekrets.js"></script>
+        <script type="text/javascript" src="static/js/bursty.js"></script>
+
+        <script id="item-template" type="text/x-handlebars-template">
+            <div class="item">
+                <h2><a href="{{ web_page_short_url }}">{{ title }}</a></h2>
+                <a href="{{ web_page_short_url }}"><img src="{{ url }}"></a>
+                <p>by <a href="{{ author_url }}">{{ author_name }}</a></p>
+            </div>
+        </script>
+    </body>
+</html>
