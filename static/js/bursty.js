@@ -2,9 +2,13 @@ $(function() {
 
     var container = $('#container'),
         masonry = new Masonry(container.get(0), {columnWidth: 100}),
-        loaded = false;
+        loaded = false,
+        loading = false,
+        perPage = 20,
+        offset = 0;
 
-    function startSearch(accessToken) {
+    function startSearch() {
+        loading = true;
         $('#spinner').show();
         $.ajax({
             type: 'GET',
@@ -12,11 +16,14 @@ $(function() {
             data: {
                 domain: 'flickr.com',
                 type: 'burst',
-                access_token: accessToken
+                rows: perPage,
+                start: offset,
+                access_token: localStorage['accessToken']
             },
             dataType: 'json',
             success: bitlyResponse(searchSuccess, searchError)
         });
+        offset += perPage;
     }
 
     function bitlyResponse(success, error) {
@@ -61,10 +68,14 @@ $(function() {
             $('#spinner').hide();
             loaded = true;
         }
+        if (loading) {
+            loading = false;
+        }
         console.log('oembed success:', data);
         var el = $(render('item-template', data)).css({opacity: 0});
         el.appendTo(container).animate({opacity: 1});
         masonry.appended(el);
+        masonry.reload();
     }
 
     function oembedError() {
@@ -80,6 +91,11 @@ $(function() {
         return _templateCache[template](context);
     }
 
+    $(window).scroll(function(e) {
+        if (!loading && document.body.scrollTop == $(document).height() - $(window).height()) {
+           startSearch();
+        }
+    });
 
     $('#prompt').submit(function(e) {
         e.preventDefault();
@@ -87,7 +103,7 @@ $(function() {
         if (token) {
             localStorage['accessToken'] = token;
             $(this).hide();
-            startSearch(localStorage['accessToken']);
+            startSearch();
         }
     });
 
@@ -95,7 +111,7 @@ $(function() {
         if (!localStorage['accessToken']) {
             $('#prompt').show();
         } else {
-            startSearch(localStorage['accessToken']);
+            startSearch();
         }
     }
     init();
