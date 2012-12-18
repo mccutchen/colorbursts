@@ -3,7 +3,8 @@ $(function() {
     console.log('accessToken:', accessToken);
 
     var container = $('#container'),
-        masonry = new Masonry(container.get(0), {columnWidth: 100});
+        masonry = new Masonry(container.get(0), {columnWidth: 100}),
+        loaded = false;
 
     function startSearch() {
         $.ajax({
@@ -57,6 +58,10 @@ $(function() {
     }
 
     function oembedSuccess(data) {
+        if (!loaded) {
+            $('#spinner').hide();
+            loaded = true;
+        }
         console.log('oembed success:', data);
         var el = $(render('item-template', data)).css({opacity: 0});
         el.appendTo(container).animate({opacity: 1});

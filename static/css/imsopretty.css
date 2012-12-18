@@ -75,3 +75,20 @@ a:hover {
     border-top: 1px dotted #ccc;
     color: #999;
 }
+
+
+#spinner {
+    margin: 20px auto;
+    text-align: center;
+    color: #999;
+    animation: pulse .5s alternate infinite;
+    -webkit-animation: pulse 1s alternate infinite;
+}
+@keyframes pulse {
+    from {opacity:1}
+    to {opacity:.5}
+}
+@-webkit-keyframes pulse {
+    from {opacity:1}
+    to {opacity:.5}
+}
