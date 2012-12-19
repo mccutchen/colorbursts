@@ -1,7 +1,6 @@
 $(function() {
 
-    var container = $('#container'),
-        masonry = new Masonry(container.get(0), {columnWidth: 100}),
+    var container = $('#container').masonry({columnWidth: 100}),
         loaded = false,
         loading = false,
         perPage = 20,
@@ -22,9 +21,8 @@ $(function() {
                 start: offset,
                 access_token: localStorage['accessToken']
             },
-            dataType: 'json',
-            success: bitlyResponse(searchSuccess, searchError)
-        });
+            dataType: 'json'
+        }).done(bitlyResponse(searchSuccess, searchError));
         offset += perPage;
     }
 
@@ -57,12 +55,10 @@ $(function() {
         oembedUrl = 'http://www.flickr.com/services/oembed/' +
             '?url=' + encodeURIComponent(url) +
             '&maxwidth=320&format=json&jsoncallback=?';
-        $.ajaxJSONP({
+        $.ajax({
             url: oembedUrl,
-            success: oembedSuccess,
-            error: oembedError,
-            complete: function() {}
-        });
+            dataType: 'jsonp'
+        }).done(oembedSuccess);
     }
 
     function oembedSuccess(data) {
@@ -73,16 +69,10 @@ $(function() {
         if (loading) {
             loading = false;
         }
-        console.log('oembed success:', data);
-        var el = $(render('item-template', data)).css({opacity: 0});
-        el.appendTo(container).animate({opacity: 1});
-        masonry.appended(el);
-        masonry.reload();
-    }
-
-    function oembedError() {
-        console.log('oembed error:', arguments);
-        // alert('oembed error!');
+        var el = $(render('item-template', data));
+        el.appendTo(container).fadeIn();
+        container.masonry('appended', el);
+        container.masonry('reload');
     }
 
     var _templateCache = {};
