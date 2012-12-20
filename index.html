@@ -1,40 +1,40 @@
 <!doctype html>
 <html>
     <head>
-        <title>Bitly + Flickr = ?</title>
+        <title>Burstboard</title>
         <link rel="stylesheet" type="text/css" href="static/css/imsopretty.css">
     </head>
     <body>
-        <h1>Bitly + Flickr = ?</h1>
+        <h1>Burstboard</h1>
 
-        <form id="prompt">
+        <div id="spinner">Loading...</div>
+
+        <form id="prompt" style="display:none;">
             <label>
                 Enter your Bitly access token<br>
                 <input type="text" id="access-token">
                 <input type="submit" value="Yeehaw!">
             </label>
-            <p class="help">You can get your access token
-            <a href="http://bitly.com/a/oauth_apps">on your Bitly OAuth apps page</a>.
-            It will only ever be stored in your browser's
-            <code>localStorage</code>, I promise!</p>
+            <p class="help">You can get your access token <a href="http://bitly.com/a/oauth_apps">on your Bitly OAuth apps page</a>.
+            It will only ever be stored in your browser's <code>localStorage</code>, I promise!</p>
         </form>
-
-        <div id="spinner">Loading...</div>
 
         <div id="container"></div>
 
-        <div id="footer">A silly hack using <a href="http://dev.bitly.com/">Bitly APIs</a> by <a href="https://twitter.com/mccutchen">Will McCutchen. <a href="https://github.com/mccutchen/burstyflickr">Source on Github</a>.</div>
+        <div id="footer">A silly hack using <a href="http://dev.bitly.com/">Bitly APIs</a> by <a href="https://twitter.com/mccutchen">Will McCutchen. <a href="https://github.com/mccutchen/burstboard">Source on Github</a>.</div>
 
         <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.0.0-rc.3/lodash.min.js"></script>
+        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js"></script>
         <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/masonry/2.1.05/jquery.masonry.min.js"></script>
         <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.rc.1/handlebars.min.js"></script>
         <script type="text/javascript" src="static/js/bursty.js"></script>
 
         <script id="item-template" type="text/x-handlebars-template">
             <div class="item">
-                <h2><a href="{{ web_page_short_url }}">{{ title }}</a></h2>
-                <a href="{{ web_page_short_url }}"><img src="{{ url }}"></a>
-                <p>by <a href="{{ author_url }}">{{ author_name }}</a></p>
+                <h2><a href="http://rt.ly/story?story_id={{ storyUrl }}">{{ title }}</a></h2>
+                <a href="http://rt.ly/story?story_id={{ storyUrl }}"><img src="{{ imageUrl }}"></a>
+                <p>{{ clicks }} clicks</a></p>
             </div>
         </script>
     </body>
