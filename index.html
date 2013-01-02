@@ -19,7 +19,7 @@
             It will only ever be stored in your browser's <code>localStorage</code>, I promise!</p>
         </form>
 
-        <div id="container"></div>
+        <div id="items-container"></div>
 
         <div id="footer">A silly hack using <a href="http://dev.bitly.com/">Bitly APIs</a> by <a href="https://twitter.com/mccutchen">Will McCutchen. <a href="https://github.com/mccutchen/burstboard">Source on Github</a>.</div>
 
@@ -28,14 +28,22 @@
         <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js"></script>
         <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/masonry/2.1.05/jquery.masonry.min.js"></script>
         <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.rc.1/handlebars.min.js"></script>
-        <script type="text/javascript" src="static/js/bursty.js"></script>
+        <script type="text/javascript" src="static/js/models.js"></script>
+        <script type="text/javascript" src="static/js/views.js"></script>
+        <script type="text/javascript" src="static/js/fetcher.js"></script>
+        <script type="text/javascript" src="static/js/app.js"></script>
+
+        <script type="text/javascript">
+            $(function() {
+                console.log('App:', App);
+                App.init();
+            });
+        </script>
 
         <script id="item-template" type="text/x-handlebars-template">
-            <div class="item">
-                <h2><a href="http://rt.ly/story?story_id={{ storyUrl }}">{{ title }}</a></h2>
-                <a href="http://rt.ly/story?story_id={{ storyUrl }}"><img src="{{ imageUrl }}"></a>
-                <p>{{ clicks }} clicks</a></p>
-            </div>
+            <h2><a href="http://rt.ly/story?story_id={{ storyId }}">{{ title }}</a></h2>
+            <a href="http://rt.ly/story?story_id={{ storyId }}"><img src="{{ imageUrl }}"></a>
+            <p>{{ phrase }} ({{ clicks }} clicks)</a></p>
         </script>
     </body>
 </html>
