@@ -1,18 +1,20 @@
 var Fetcher = (function() {
     var apiHost = 'https://api-ssl.bitly.com',
-        seenPhrases = {};
+        seenPhrases = {},
+        seenTitles = {},
+        seenImages = {};
+
+    function genericError(resp) {
+        App.trigger('Fetcher:error', resp);
+    }
 
     function apiRequest(url, params, success) {
-        var error = function(resp) {
-            App.trigger('Fetcher:error', resp);
-        };
-        params = _.merge(params || {}, {
-            access_token: localStorage.accessToken
-        });
-        promise = $.ajax({
+        var promise = $.ajax({
             type: 'GET',
             url: apiHost + url,
-            data: params,
+            data: _.merge(params || {}, {
+                access_token: localStorage.accessToken
+            }),
             dataType: 'json',
             traditional: true
         });
@@ -21,12 +23,12 @@ var Fetcher = (function() {
         // errors by transforming the latter into the former.
         promise.done(function(data) {
             if (data.status_code != 200) {
-                error(data);
+                genericError(data);
             } else {
                 success(data.data);
             }
         }).fail(function(xhr) {
-            return error({
+            return genericError({
                 status_code: xhr.statusCode,
                 status_txt: xhr.body,
                 data: null
@@ -76,7 +78,12 @@ var Fetcher = (function() {
 
     function onStoryTitle(item, titleData) {
         App.trigger('Fetcher:title', titleData);
-        item.set('title', titleData.title);
+        if (!seenTitles[titleData.title]) {
+            item.set('title', titleData.title);
+            seenTitles[titleData.title] = 1;
+        } else {
+            console.log('Skipping title:', titleData.title);
+        }
     }
 
     function fetchStoryMetadata(item) {
@@ -91,60 +98,19 @@ var Fetcher = (function() {
     function onStoryMetadata(item, metadata) {
         App.trigger('Fetcher:metadata', metadata);
         item.set('clicks', metadata.clicks);
-        metadata.images = makeFakeImages();
-        getBestImage(metadata.images, _.partial(onStoryImage, item));
-    }
-
-    function makeFakeImages() {
-        var sizeParts = [100, 150, 200, 250, 300, 350, 400],
-            sizes = [],
-            count = Math.floor(Math.random() * 10),
-            i, w, h;
-        for (i = 0; i < count; i++) {
-            w = sizeParts[Math.floor(Math.random() * sizeParts.length)];
-            h = sizeParts[Math.floor(Math.random() * sizeParts.length)];
-            sizes.push(w + 'x' + h);
-        }
-        return sizes.map(function(size) {
-            return 'http://placehold.it/' + size;
-        });
-    }
-
-    function onStoryImage(item, img) {
-        console.log('Fetcher:image', img);
-        if (img) {
-            item.set('imageUrl', img.src);
-        }
-    }
-
-    function getBestImage(imageUrls, callback) {
-        var images = imageUrls.map(function(src) {
-                var img = new Image();
-                img.src = src;
-                return img;
-            }),
-            timeout = 1000,
-            start = new Date().getTime();
-
-        (function await() {
-            var loaded = images.filter(function(img) { return img.complete; }),
-                result = null,
-                i;
-            if (loaded.length < images.length && (new Date().getTime() - start) < timeout) {
-                setTimeout(await, 20);
+        if (metadata.images && metadata.images.length > 0) {
+            console.log('Sorting images:', metadata.images);
+            var imageUrl = metadata.images.sort(function(a, b) {
+                return (a.width * a.height >= b.width * b.height) ? -1 : 1;
+            })[0].url;
+            console.log('Best image:', imageUrl);
+            if (!seenImages[imageUrl]) {
+                item.set('imageUrl', imageUrl);
+                seenImages[imageUrl] = 1;
             } else {
-                if (loaded.length > 0) {
-                    result = loaded.sort(function(a, b) {
-                        return (a.width * a.height >= b.width * b.height) ? -1 : 1;
-                    })[0];
-                }
-                for (i = 0; i < images.length; i++) {
-                    if (result === null || images[i].src !== result.src)
-                        delete images[i];
-                }
-                callback(result);
+                console.log('Skipping image:', imageUrl);
             }
-        })();
+        }
     }
 
     return {

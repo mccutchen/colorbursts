@@ -45,7 +45,7 @@ var App = (function(){
                 $el = view.render().$el;
             $el.appendTo(this.container).fadeIn();
             this.container.masonry('appended', $el);
-            // this.container.masonry('reload');
+            this.container.masonry('reload');
         },
 
         setAccessToken: function(e) {
