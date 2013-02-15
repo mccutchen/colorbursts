@@ -1,20 +1,39 @@
 var Fetcher = (function() {
-    var apiHost = 'https://api-ssl.bitly.com',
+    var apiPrefix = '/bitly',
         seenPhrases = {},
-        seenTitles = {},
-        seenImages = {};
+        seenTitles = {};
 
     function genericError(resp) {
         App.trigger('Fetcher:error', resp);
     }
 
+    function embedlyPreview(url, success) {
+        var promise = $.ajax({
+            type: 'GET',
+            url: '/embedly',
+            data: { url: url },
+            dataType: 'json',
+            traditional: true
+        });
+
+        promise.done(function(data) {
+            console.log('Embedly response:', data);
+            return success(data);
+        }).fail(function(xhr) {
+            console.log('Embedly error:', xhr);
+            return genericError({
+                status_code: xhr.statusCode,
+                status_txt: xhr.body,
+                data: null
+            });
+        });
+    }
+
     function apiRequest(url, params, success) {
         var promise = $.ajax({
             type: 'GET',
-            url: apiHost + url,
-            data: _.merge(params || {}, {
-                access_token: localStorage.accessToken
-            }),
+            url: apiPrefix + url,
+            data: params,
             dataType: 'json',
             traditional: true
         });
@@ -23,9 +42,9 @@ var Fetcher = (function() {
         // errors by transforming the latter into the former.
         promise.done(function(data) {
             if (data.status_code != 200) {
-                genericError(data);
+                return genericError(data);
             } else {
-                success(data.data);
+                return success(data.data);
             }
         }).fail(function(xhr) {
             return genericError({
@@ -38,14 +57,18 @@ var Fetcher = (function() {
 
     function fetchBursts() {
         App.trigger('Fetcher:loading');
-        apiRequest('/v3/realtime/bursting_phrases', {}, onBursts);
+        apiRequest('/v3/realtime/bursting_phrases', {limit: 1}, onBursts);
     }
 
     function onBursts(data) {
         App.trigger('Fetcher:bursting_phrases', data);
         data.phrases.forEach(function(burst) {
             if (!seenPhrases[burst.phrase]) {
-                fetchStory(new Item({phrase: burst.phrase}));
+                var item = new Item({
+                    phrase: burst.phrase,
+                    ghash: burst.ghashes[0].ghash
+                });
+                fetchStoryLongUrl(item);
                 seenPhrases[burst.phrase] = 1;
             } else {
                 console.log('Skipping phrase:', burst.phrase);
@@ -53,64 +76,48 @@ var Fetcher = (function() {
         });
     }
 
-    function fetchStory(item) {
-        var callback = _.partial(onStory, item);
+    function fetchStoryLongUrl(item) {
+        var callback = _.partial(onLongUrl, item);
             params = {
-                phrases: item.get('phrase')
+                hash: item.get('ghash')
             };
-        apiRequest('/v3/story_api/story_from_phrases', params, callback);
+        apiRequest('/v3/expand', params, callback);
     }
 
-    function onStory(item, story) {
-        App.trigger('Fetcher:story_from_phrases', story);
-        item.set('storyId', story.story_id);
-        fetchStoryTitle(item);
-        fetchStoryMetadata(item);
+    function onLongUrl(item, info) {
+        App.trigger('Fetcher:long_url', info);
+        item.set('longUrl', info.expand[0].long_url);
+        fetchEmbedlyPreview(item);
     }
 
-    function fetchStoryTitle(item) {
-        var callback = _.partial(onStoryTitle, item),
-            params = {
-                story_id: item.get('storyId')
-            };
-        apiRequest('/v3/story_api/title', params, callback);
+    function fetchEmbedlyPreview(item) {
+        var callback = _.partial(onEmbedlyPreview, item);
+        embedlyPreview(item.get('longUrl'), callback);
     }
 
-    function onStoryTitle(item, titleData) {
-        App.trigger('Fetcher:title', titleData);
-        if (!seenTitles[titleData.title]) {
-            item.set('title', titleData.title);
-            seenTitles[titleData.title] = 1;
-        } else {
-            console.log('Skipping title:', titleData.title);
+    function onEmbedlyPreview(item, preview) {
+        App.trigger('Fetcher:preview', preview);
+        if (seenTitles[preview.title]) {
+            console.log('Skipping dupe title:', preview.title);
+            return;
+        }
+        item.set('title', preview.title);
+        seenTitles[preview.title] = 1;
+        if (preview.images.length > 0 && preview.images[0].colors.length > 0) {
+            item.set('colors', _.map(preview.images[0].colors, formatColor));
         }
     }
 
-    function fetchStoryMetadata(item) {
-        var callback = _.partial(onStoryMetadata, item),
-            params = {
-                story_id: item.get('storyId'),
-                field: ['titles', 'images', 'clicks']
-            };
-        apiRequest('/v3/story_api/metadata', params, callback);
-    }
-
-    function onStoryMetadata(item, metadata) {
-        App.trigger('Fetcher:metadata', metadata);
-        item.set('clicks', metadata.clicks);
-        if (metadata.images && metadata.images.length > 0) {
-            console.log('Sorting images:', metadata.images);
-            var imageUrl = metadata.images.sort(function(a, b) {
-                return (a.width * a.height >= b.width * b.height) ? -1 : 1;
-            })[0].url;
-            console.log('Best image:', imageUrl);
-            if (!seenImages[imageUrl]) {
-                item.set('imageUrl', imageUrl);
-                seenImages[imageUrl] = 1;
-            } else {
-                console.log('Skipping image:', imageUrl);
-            }
-        }
+    function formatColor(color) {
+        console.log('formatting color', color);
+        var c = color.color,
+            r = c[0],
+            g = c[1],
+            b = c[2];
+        return {
+            weight: color.weight,
+            color: 'rgb(' + r + ',' + g + ',' + b + ')'
+        };
     }
 
     return {

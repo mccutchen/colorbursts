@@ -1,10 +1,10 @@
 var Item = Backbone.Model.extend({
     defaults: {
-        storyId: null,
         phrase: null,
         title: null,
-        imageUrl: null,
-        clicks: null
+        ghash: null,
+        longUrl: null,
+        colors: null
     },
 
     initialize: function() {

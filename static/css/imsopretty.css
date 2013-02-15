@@ -7,80 +7,60 @@ body {
     color: #333;
 }
 
+a {
+    color: #000;
+    text-decoration: none;
+}
+
 h1 {
-    margin: 0 0 20px 0;
+    margin: 0;
     padding: 20px;
     font-weight: normal;
     font-size: 24px;
     text-align: center;
-    border-bottom: 1px dotted #ccc;
 }
-
-a {
-    color: #333;
-    text-decoration: none;
-}
-a:hover {
-    border-bottom: 1px dotted #999;
-}
-
 
 .item {
-    border: 1px solid #ccc;
-    float: left;
-    margin: 0 0 20px 20px;
     position: relative;
+    clear: both;
+    overflow: hidden;
 }
-
-.item {
-    color: #888;
-}
-
-.item img {
-    display: block;
-    max-width: 500px;
-    max-height: 500px;
-}
-
-.item h2, .item p {
-    opacity: 0;
+.item .color {
     position: absolute;
-    padding: 5px;
+    top: 0;
+    z-index: 0;
+    height: 100%;
+    display: block;
+}
+
+.item h2 {
+    /*opacity: 0;*/
+    padding: 10px;
     margin: 0;
     background-color: rgba(255, 255, 255, .75);
     -webkit-transition: opacity 0.1s ease-in;
     -moz-transition: opacity 0.1s ease-in;
     -o-transition: opacity 0.1s ease-in;
     transition: opacity 0.1s ease-in;
-}
-
-.item h2 {
-    top: 0;
-    left: 0;
+    z-index: 100;
     font-size: 16px;
     font-weight: normal;
 }
 
-.item p {
-    bottom: 0;
-    right: 0;
-}
-
-.item:hover h2, .item:hover p {
+.item:hover h2 {
     opacity: 1;
 }
 
 #footer {
     text-align: center;
     padding: 20px;
-    border-top: 1px dotted #ccc;
     color: #999;
     clear: both;
 }
 
 
 #spinner {
-    display: none;
+    display: block;
     margin: 20px auto;
     text-align: center;
     color: #999;
@@ -94,35 +74,4 @@ a:hover {
 @-webkit-keyframes pulse {
     from {opacity:1}
     to {opacity:.5}
-}
-
-
-#prompt {
-    display: none;
-    width: 320px;
-    margin: 20px auto;
-    text-align: center;
-}
-#prompt label {
-    font-size: 16px;
-}
-.help {
-    color: #999;
-}
-input {
-    font-size: 16px;
-    font-family: Menlo, Consolas, monospace;
-    padding: 5px;
-    width: 320px;
-    margin-top: 10px;
-}
-input[type="text"] {
-    color: #666;
-    border: 1px solid #ccc;
-    background-color: #eee;
-}
-input[type="submit"] {
-    background-color: #333;
-    color: #fff;
-    width: 332px;
 }

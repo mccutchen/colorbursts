@@ -1,23 +1,13 @@
 <!doctype html>
 <html>
     <head>
-        <title>Burstboard</title>
+        <title>Colorbursts</title>
         <link rel="stylesheet" type="text/css" href="static/css/imsopretty.css">
     </head>
     <body>
-        <h1>Burstboard</h1>
+        <h1>Colorbursts</h1>
 
         <div id="spinner">Loading...</div>
-
-        <form id="prompt" style="display:none;">
-            <label>
-                Enter your Bitly access token<br>
-                <input type="text" id="access-token">
-                <input type="submit" value="Yeehaw!">
-            </label>
-            <p class="help">You can get your access token <a href="http://bitly.com/a/oauth_apps">on your Bitly OAuth apps page</a>.
-            It will only ever be stored in your browser's <code>localStorage</code>, I promise!</p>
-        </form>
 
         <div id="items-container"></div>
 
@@ -41,9 +31,10 @@
         </script>
 
         <script id="item-template" type="text/x-handlebars-template">
-            <h2><a href="http://rt.ly/story?story_id={{ storyId }}">{{ title }}</a></h2>
-            <a href="http://rt.ly/story?story_id={{ storyId }}"><img src="{{ imageUrl }}"></a>
-            <p>{{ phrase }} ({{ clicks }} clicks)</a></p>
+            {{#colors}}
+                <a class="color" style="background-color:{{color}}; width:{{width}}px; left:{{offset}}px;" href="http://bit.ly/{{../ghash}}">&nbsp;</a>
+            {{/colors}}
+            <h2><a href="http://bit.ly/{{ghash}}">{{title}}</a></h2>
         </script>
     </body>
 </html>

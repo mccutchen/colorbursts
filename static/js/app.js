@@ -3,15 +3,15 @@ var App = (function(){
         el: $('body').get(0),
 
         events: {
-            '#prompt submit': 'setAccessToken'
         },
 
         initialize: function() {
             this.items = new ItemList();
-            this.container = $('#items-container').masonry({columnWidth: 100});
-            this.prompt = $('#prompt');
+            this.container = $('#items-container');
+            this.spinner = $('#spinner');
 
             this.on('Item:loaded', function(item) {
+                this.spinner.hide();
                 this.items.add(item);
             });
 
@@ -22,7 +22,6 @@ var App = (function(){
             });
 
             this.on('App:ready', function() {
-                this.prompt.hide();
                 Fetcher.fetchBursts();
                 setInterval(Fetcher.fetchBursts, 30 * 1000);
             });
@@ -33,28 +32,13 @@ var App = (function(){
         },
 
         init: function() {
-            if (!localStorage['accessToken']) {
-                this.prompt.show();
-            } else {
-                this.trigger('App:ready');
-            }
+            this.trigger('App:ready');
         },
 
         addItem: function(item) {
             var view = new ItemView({model: item}),
                 $el = view.render().$el;
-            $el.appendTo(this.container).fadeIn();
-            this.container.masonry('appended', $el);
-            this.container.masonry('reload');
-        },
-
-        setAccessToken: function(e) {
-            e.preventDefault();
-            var token = $('#access-token').val();
-            if (token) {
-                localStorage['accessToken'] = token;
-                this.trigger('App:ready');
-            }
+            $el.prependTo(this.container).fadeIn();
         }
     });
 
