@@ -17,18 +17,30 @@ var ItemView = Backbone.View.extend({
 
     render: function() {
         console.log('Rendering data: %o', this.model.toJSON());
+
+        // Color data for some photos come back with weights that don't add up
+        // to 1, so we normalize the weight if necessary.
         var totalWidth = $(document.body).width(),
             colors = this.model.get('colors'),
+            count = colors.length,
+            totalWeight = colors.reduce(function(sum, color) {
+                return sum + color.weight;
+            }, 0.0),
+            weightDelta = (1 - totalWeight) / count,
             offset = 0;
 
-        for (var i = 0; i < colors.length; i++) {
-            var color = colors[i];
-            color.width = Math.ceil(totalWidth * color.weight);
-            color.width = Math.ceil(totalWidth / colors.length);
+        colors.forEach(function(color, i) {
+            color.css = this.formatColor.apply(null, color.color);
+            color.width = Math.ceil(totalWidth * (color.weight + weightDelta));
             color.offset = offset;
             offset += color.width;
-        }
+        }, this);
+
         this.$el.html(this.template(this.model.toJSON()));
         return this;
+    },
+
+    formatColor: function(r, g, b) {
+        return 'rgb(' + r + ',' + g + ',' + b + ')';
     }
 });

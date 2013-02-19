@@ -104,20 +104,8 @@ var Fetcher = (function() {
         item.set('title', preview.title);
         seenTitles[preview.title] = 1;
         if (preview.images.length > 0 && preview.images[0].colors.length > 0) {
-            item.set('colors', _.map(preview.images[0].colors, formatColor));
+            item.set('colors', preview.images[0].colors);
         }
-    }
-
-    function formatColor(color) {
-        console.log('formatting color', color);
-        var c = color.color,
-            r = c[0],
-            g = c[1],
-            b = c[2];
-        return {
-            weight: color.weight,
-            color: 'rgb(' + r + ',' + g + ',' + b + ')'
-        };
     }
 
     return {
