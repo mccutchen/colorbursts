@@ -77,7 +77,7 @@ var Fetcher = (function() {
     }
 
     function fetchStoryLongUrl(item) {
-        var callback = _.partial(onLongUrl, item);
+        var callback = onLongUrl.bind(null, item);
             params = {
                 hash: item.get('ghash')
             };
@@ -91,7 +91,7 @@ var Fetcher = (function() {
     }
 
     function fetchEmbedlyPreview(item) {
-        var callback = _.partial(onEmbedlyPreview, item);
+        var callback = onEmbedlyPreview.bind(null, item);
         embedlyPreview(item.get('longUrl'), callback);
     }
 
