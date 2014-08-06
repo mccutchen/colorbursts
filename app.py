@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import logging
 import os
 import socket
@@ -18,9 +20,6 @@ class BaseHandler(tornado.web.RequestHandler):
             self._httpclient = tornado.httpclient.AsyncHTTPClient()
         return self._httpclient
 
-    def fetch(self, *args, **kwargs):
-        return self.httpclient.fetch(*args, **kwargs)
-
 
 class IndexHandler(BaseHandler):
 
@@ -30,16 +29,15 @@ class IndexHandler(BaseHandler):
 
 class EmbedlyProxyHandler(BaseHandler):
 
-    @tornado.web.asynchronous
-    @tornado.gen.engine
+    @tornado.gen.coroutine
     def get(self):
         params = {
-            'url': self.get_argument('url'),
+            'url': _utf8(self.get_argument('url')),
             'key': self.settings['embedly_api_key'],
             'colors': 'true',
         }
         url = 'http://api.embed.ly/1/preview?' + urllib.urlencode(params)
-        resp = yield tornado.gen.Task(self.fetch, url)
+        resp = yield self.httpclient.fetch(url)
         self.set_header('Content-Type', resp.headers['Content-Type'])
         self.set_status(resp.code)
         self.finish(resp.body)
@@ -47,16 +45,15 @@ class EmbedlyProxyHandler(BaseHandler):
 
 class BitlyProxyHandler(BaseHandler):
 
-    @tornado.web.asynchronous
-    @tornado.gen.engine
+    @tornado.gen.coroutine
     def get(self, path):
-        params = dict((k, map(_utf8, self.get_arguments(k)))
-                      for k in self.request.arguments)
+        params = dict((k, self.get_query_arguments(k))
+                      for k in self.request.query_arguments)
         params['access_token'] = self.settings['bitly_access_token']
-        url = 'https://api-ssl.bitly.com' + path
+        base_url = 'https://api-ssl.bitly.com' + path
+        url = base_url + '?' + urllib.urlencode(params, doseq=1)
         logging.debug('Bitly proxy: %s %r', url, params)
-        resp = yield tornado.gen.Task(
-            self.fetch, url + '?' + urllib.urlencode(params, doseq=1))
+        resp = yield self.httpclient.fetch(url)
         logging.debug('Proxy resp: %s %s', resp.code, url)
         self.set_header('Content-Type', resp.headers['Content-Type'])
         self.set_status(resp.code)
@@ -66,7 +63,7 @@ class BitlyProxyHandler(BaseHandler):
 def _utf8(s):
     if not s or isinstance(s, str):
         return s
-    return s.decode('utf8')
+    return s.encode('utf8')
 
 
 settings = {
