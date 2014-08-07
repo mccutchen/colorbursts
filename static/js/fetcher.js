@@ -41,7 +41,7 @@ var Fetcher = (function() {
         // Unify handling of bitly-style error responses and actual HTTP
         // errors by transforming the latter into the former.
         promise.done(function(data) {
-            if (data.status_code != 200) {
+            if (data.status_code !== 200) {
                 return genericError(data);
             } else {
                 return success(data.data);
@@ -63,12 +63,12 @@ var Fetcher = (function() {
     function onBursts(data) {
         App.trigger('Fetcher:bursting_phrases', data);
         data.phrases.forEach(function(burst) {
-            if (!seenPhrases[burst.phrase]) {
+            if (burst.ghashes && !seenPhrases[burst.phrase]) {
                 var item = new Item({
                     phrase: burst.phrase,
                     ghash: burst.ghashes[0].ghash
                 });
-                fetchStoryLongUrl(item);
+                fetchEmbedlyPreview(item, 'http://bit.ly/' + item.get('ghash'));
                 seenPhrases[burst.phrase] = 1;
             } else {
                 console.log('Skipping phrase:', burst.phrase);
@@ -76,23 +76,9 @@ var Fetcher = (function() {
         });
     }
 
-    function fetchStoryLongUrl(item) {
-        var callback = onLongUrl.bind(null, item);
-            params = {
-                hash: item.get('ghash')
-            };
-        apiRequest('/v3/expand', params, callback);
-    }
-
-    function onLongUrl(item, info) {
-        App.trigger('Fetcher:long_url', info);
-        item.set('longUrl', info.expand[0].long_url);
-        fetchEmbedlyPreview(item);
-    }
-
-    function fetchEmbedlyPreview(item) {
+    function fetchEmbedlyPreview(item, url) {
         var callback = onEmbedlyPreview.bind(null, item);
-        embedlyPreview(item.get('longUrl'), callback);
+        embedlyPreview(url, callback);
     }
 
     function onEmbedlyPreview(item, preview) {
@@ -101,9 +87,12 @@ var Fetcher = (function() {
             console.log('Skipping dupe title:', preview.title);
             return;
         }
-        item.set('title', preview.title);
+        item.set({
+            'title': preview.title,
+            'url': preview.url
+        });
         seenTitles[preview.title] = 1;
-        if (preview.images.length > 0 && preview.images[0].colors.length > 0) {
+        if (preview.images.length > 0 && preview.images[0].colors && preview.images[0].colors.length > 0) {
             item.set('colors', preview.images[0].colors);
         }
     }

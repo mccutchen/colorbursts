@@ -3,7 +3,7 @@ var Item = Backbone.Model.extend({
         phrase: null,
         title: null,
         ghash: null,
-        longUrl: null,
+        url: null,
         colors: null
     },
 
