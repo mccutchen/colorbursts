@@ -42,9 +42,10 @@ footer {
 .item {
     position: relative;
     z-index: 1;
+    height: 40px;
 }
 .item a {
-    display: block;
+    display: none;
     padding: 10px;
     white-space: nowrap;
     overflow: hidden;
@@ -66,11 +67,11 @@ footer {
     -moz-transform: translateX(100%);
     transform: translateX(100%);
 }
-/*.item:hover a {
+.item:hover a {
     -webkit-transform: translateX(0);
     -moz-transform: translateX(0);
     transform: translateX(0);
-}*/
+}
 
 
 .loading {
