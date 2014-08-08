@@ -30,6 +30,20 @@ function isNewPreview(preview) {
 }
 
 
+function processColors(colors) {
+    var totalWeight = colors.reduce(function(sum, color) {
+        return sum + color.weight;
+    }, 0.0);
+    var ratio = 1 / totalWeight;
+    return colors.map(function(color) {
+        return {
+            css: 'rgb(' + color.color.join(',') + ')',
+            weight: color.weight * ratio
+        };
+    });
+}
+
+
 function getImageColors(preview) {
     if (!(preview.images &&
           preview.images.length > 0 &&
@@ -38,7 +52,7 @@ function getImageColors(preview) {
         console.debug('No colors for preview:', preview);
         return null;
     }
-    return preview.images[0].colors;
+    return processColors(preview.images[0].colors);
 }
 
 
