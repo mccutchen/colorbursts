@@ -1,0 +1,23 @@
+{
+  "name": "colorbursts",
+  "version": "0.0.2",
+  "description": "oh, you know, just something",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mccutchen/colorbursts"
+  },
+  "devDependencies": {
+    "browserify": "^5.9.1",
+    "watchify": "^1.0.1",
+    "reactify": "^0.14.0"
+  },
+  "dependencies": {
+    "react": "^0.11.1",
+    "jquery": "^2.1.1"
+  },
+  "browserify": {
+    "transform": [
+      "reactify"
+    ]
+  }
+}

@@ -1,46 +1,61 @@
-var App = (function(){
-    var App = Backbone.View.extend({
-        el: $('body').get(0),
+/** @jsx React.DOM */
 
-        events: {
-        },
+var React = require('react');
+var Fetcher = require('./fetcher');
 
-        initialize: function() {
-            this.items = new ItemList();
-            this.container = $('#items-container');
-            this.spinner = $('#spinner');
+var FETCH_INTERVAL = 10 * 1000;
+var UPDATE_INTERVAL = 1 * 1000;
 
-            this.on('Item:loaded', function(item) {
-                this.spinner.hide();
-                this.items.add(item);
+
+var Item = React.createClass({
+    render: function() {
+        return (
+            <div className="item">
+                <a href={this.props.url}>{this.props.title}</a>
+            </div>
+        );
+    }
+});
+
+
+var ItemList = React.createClass({
+    getInitialState: function() {
+        return {
+            items: []
+        };
+    },
+
+    componentWillMount: function() {
+        console.log('Fetching new items?');
+        Fetcher.fetch();
+        setInterval(Fetcher.fetch, FETCH_INTERVAL);
+        setInterval(this.checkQueue, UPDATE_INTERVAL);
+    },
+
+    checkQueue: function() {
+        var item = Fetcher.queue.pop();
+        if (item) {
+            this.setState({
+                items: this.state.items.concat([item])
             });
-
-            this.items.on('add', this.addItem, this);
-
-            this.items.on('all', function(name, data) {
-                console.log('ITEMS EVENT:', name, data);
-            });
-
-            this.on('App:ready', function() {
-                Fetcher.fetchBursts();
-                setInterval(Fetcher.fetchBursts, 30 * 1000);
-            });
-
-            this.on('all', function(name, data) {
-                console.debug('APP EVENT:', name, data);
-            });
-        },
-
-        init: function() {
-            this.trigger('App:ready');
-        },
-
-        addItem: function(item) {
-            var view = new ItemView({model: item}),
-                $el = view.render().$el;
-            $el.prependTo(this.container).fadeIn();
         }
-    });
+    },
 
-    return new App();
-})();
+    render: function() {
+        var items = this.state.items.map(function(item) {
+            return <Item key={item.url} title={item.title} url={item.url} colors={item.colors} />;
+        });
+        if (items) {
+            return <div className="items-container">{items}</div>;
+        } else {
+            return <div className="loading">Loading&hellip;</div>;
+        }
+    }
+});
+
+
+React.renderComponent(
+    <ItemList />,
+    document.getElementById('app')
+);
+

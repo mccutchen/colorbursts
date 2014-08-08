@@ -28,6 +28,8 @@ h1 {
     position: relative;
     clear: both;
     overflow: hidden;
+    padding: 5px;
+    text-align: center;
 }
 .item .color {
     position: absolute;
@@ -55,7 +57,7 @@ h1 {
     opacity: 1;
 }
 
-#footer {
+footer {
     text-align: center;
     padding: 20px;
     color: #999;
@@ -67,7 +69,7 @@ h1 {
 }
 
 
-#spinner {
+.loading {
     display: block;
     margin: 20px auto;
     text-align: center;

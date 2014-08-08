@@ -7,37 +7,14 @@
     <body>
         <h1>Colorbursts</h1>
 
-        <div id="spinner">Loading...</div>
+        <div id="app"></div>
 
-        <div id="items-container"></div>
-
-        <div id="footer">
+        <footer>
             A silly hack using <a href="http://dev.bitly.com/">Bitly APIs</a>
             by <a href="https://twitter.com/mccutchen">Will McCutchen.
             <a href="https://github.com/mccutchen/colorbursts">Source on Github</a>.
-        </div>
-
-        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.0.0-rc.3/lodash.min.js"></script>
-        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js"></script>
-        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.rc.1/handlebars.min.js"></script>
-        <script type="text/javascript" src="static/js/models.js"></script>
-        <script type="text/javascript" src="static/js/views.js"></script>
-        <script type="text/javascript" src="static/js/fetcher.js"></script>
-        <script type="text/javascript" src="static/js/app.js"></script>
-
-        <script type="text/javascript">
-            $(function() {
-                console.log('App:', App);
-                App.init();
-            });
-        </script>
-
-        <script id="item-template" type="text/x-handlebars-template">
-            {{#colors}}
-                <a class="color" style="background-color:{{css}}; width:{{width}}px; left:{{offset}}px;" href="{{../url}}">&nbsp;</a>
-            {{/colors}}
-            <h2><a href="{{url}}">{{title}}</a></h2>
-        </script>
+        </footer>
     </body>
+
+    <script type="text/javascript" src="/static/build/app.js"></script>
 </html>
