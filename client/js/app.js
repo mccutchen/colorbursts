@@ -33,8 +33,7 @@ var ItemList = React.createClass({
 
     componentWillMount: function() {
         console.log('Fetching new items?');
-        Fetcher.fetch();
-        setInterval(Fetcher.fetch, FETCH_INTERVAL);
+        Fetcher.start(FETCH_INTERVAL);
         setInterval(this.checkQueue, UPDATE_INTERVAL);
     },
 

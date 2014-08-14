@@ -122,9 +122,15 @@ function fetch() {
     });
 }
 
+
+function start(interval) {
+    fetch();
+    setInterval(fetch, interval);
+}
+
 window.queue = queue;
 
 module.exports = {
-    fetch: fetch,
+    start: start,
     queue: queue
 };
