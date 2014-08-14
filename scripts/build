@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+set -u
+
+project_root=$(cd `dirname "$0"`/../ && pwd)
+client_root="$project_root/client"
+
+cd "$client_root"
+npm install
+mkdir -p build
+./node_modules/.bin/browserify --debug js/app.js -o build/app.js

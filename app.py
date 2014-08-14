@@ -24,7 +24,7 @@ class BaseHandler(tornado.web.RequestHandler):
 class IndexHandler(BaseHandler):
 
     def get(self):
-        self.finish(open('index.html').read())
+        self.finish(open('client/index.html').read())
 
 
 class EmbedlyProxyHandler(BaseHandler):
@@ -69,8 +69,8 @@ def _utf8(s):
 settings = {
     'embedly_api_key': os.environ['EMBEDLY_API_KEY'],
     'bitly_access_token': os.environ['BITLY_ACCESS_TOKEN'],
-    'static_path': 'static',
-    'debug': socket.gethostname() == 'brisket.local',
+    'static_path': 'client',
+    'debug': socket.gethostname() == 'barbacoa.local',
 }
 
 
