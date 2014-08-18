@@ -50,7 +50,7 @@ var ItemList = React.createClass({
         var items = this.state.items.map(function(item) {
             return <Item key={item.url} title={item.title} url={item.url} colors={item.colors} />;
         });
-        if (items) {
+        if (items.length) {
             return <div className="items-container">{items}</div>;
         } else {
             return <div className="loading">Loading&hellip;</div>;
